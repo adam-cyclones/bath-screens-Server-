@@ -1,0 +1,9 @@
+name = static page
+description = Adding static pages to Drupal as is.
+core = 7.x
+; Information added by Drupal.org packaging script on 2015-02-06
+version = "7.x-1.0-alpha2"
+core = "7.x"
+project = "static_page"
+datestamp = "1423211583"
+

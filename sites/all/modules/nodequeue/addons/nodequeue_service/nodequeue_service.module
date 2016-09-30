@@ -1,0 +1,232 @@
+<?php
+/**
+ * @file
+ * Provides nodequeue services 3.x integration.
+ */
+
+/**
+ * Implements hook_services_resources().
+ */
+function nodequeue_service_services_resources() {
+  return array(
+    'nodequeue' => array(
+      'actions' => array(
+        // Retrieves an array of available nodequeue objects.
+        'retrieve_queues' => array(
+          'help' => 'Retrieves an array of available nodequeue objects.',
+          'file' => array(
+            'type' => 'inc',
+            'module' => 'nodequeue_service',
+            'name' => 'nodequeue_service.resource'
+          ),
+          'callback' => '_nodequeue_service_retrieve_queues',
+          'access callback' => '_nodequeue_service_access',
+          'access arguments' => array('retrieve_queues'),
+        ),
+        // Retrieves an array of available sub-nodequeue objects.
+        'retrieve_subqueues' => array(
+          'help' => 'Retrieves an array of available sub-nodequeue objects.',
+          'file' => array(
+            'type' => 'inc',
+            'module' => 'nodequeue_service',
+            'name' => 'nodequeue_service.resource'
+          ),
+          'callback' => '_nodequeue_service_retrieve_subqueues',
+          'access callback' => '_nodequeue_service_access',
+          'access arguments' => array('retrieve_subqueues'),
+          'args' => array(
+            array(
+              'name' => 'qid',
+              'type' => 'int',
+              'description' => 'A parent nodequeue queue ID.',
+              'source' => array('data' => 'qid'),
+              'optional' => FALSE,
+            ),
+          ),
+        ),
+        // Retrieves an array of all nodequeue nodes.
+        'retrieve_queue_items' => array(
+          'help' => 'Retrieves an array of all nodequeue nodes.',
+          'file' => array(
+            'type' => 'inc',
+            'module' => 'nodequeue_service',
+            'name' => 'nodequeue_service.resource'
+          ),
+          'callback' => '_nodequeue_service_retrieve_queue_items',
+          'access callback' => '_nodequeue_service_access',
+          'access arguments' => array('retrieve_queue_items'),
+          'args' => array(
+            array(
+              'name' => 'qid',
+              'type' => 'int',
+              'description' => 'A nodequeue queue ID.',
+              'source' => array('data' => 'qid'),
+              'optional' => FALSE,
+            ),
+          ),
+        ),
+        // Adds a node to a nodequeue.
+        'add_queue_item' => array(
+          'help' => 'Adds a node to a nodequeue.',
+          'file' => array(
+            'type' => 'inc',
+            'module' => 'nodequeue_service',
+            'name' => 'nodequeue_service.resource'
+          ),
+          'callback' => '_nodequeue_service_add_queue_item',
+          'access callback' => '_nodequeue_service_access',
+          'access arguments' => array('add_queue_item'),
+          'args' => array(
+            array(
+              'name' => 'qid',
+              'type' => 'int',
+              'description' => 'Nodequeue queue ID.',
+              'source' => array('data' => 'qid'),
+              'optional' => FALSE,
+            ),
+            array(
+              'name' => 'nid',
+              'type' => 'int',
+              'description' => 'Node ID of the node you want to add.',
+              'source' => array('data' => 'nid'),
+              'optional' => FALSE,
+            ),
+          ),
+        ),
+        // Removes a node from a nodequeue.
+        'remove_queue_item' => array(
+          'help' => 'Removes a node from a nodequeue.',
+          'file' => array(
+            'type' => 'inc',
+            'module' => 'nodequeue_service',
+            'name' => 'nodequeue_service.resource'
+          ),
+          'callback' => '_nodequeue_service_remove_queue_item',
+          'access callback' => '_nodequeue_service_access',
+          'access arguments' => array('remove_queue_item'),
+          'args' => array(
+            array(
+              'name' => 'qid',
+              'type' => 'int',
+              'description' => 'Nodequeue queue ID.',
+              'source' => array('data' => 'qid'),
+              'optional' => FALSE,
+            ),
+            array(
+              'name' => 'nid',
+              'type' => 'int',
+              'description' => 'Node ID of the node you want to remove.',
+              'source' => array('data' => 'nid'),
+              'optional' => FALSE,
+            ),
+          ),
+        ),
+        // Retrieves a node at a specific position of a nodequeue.
+        'get_queue_item' => array(
+          'help' => 'Retrieves a node at a specific position of a nodequeue.',
+          'file' => array(
+            'type' => 'inc',
+            'module' => 'nodequeue_service',
+            'name' => 'nodequeue_service.resource'
+          ),
+          'callback' => '_nodequeue_service_get_queue_item',
+          'access callback' => '_nodequeue_service_access',
+          'access arguments' => array('get_queue_item'),
+          'args' => array(
+            array(
+              'name' => 'qid',
+              'type' => 'int',
+              'description' => 'Nodequeue queue ID.',
+              'source' => array('data'),
+              'optional' => FALSE,
+            ),
+            array(
+              'name' => 'position',
+              'type' => 'int',
+              'description' => 'Position of the node in the queue you want to retrieve.',
+              'source' => array('data'),
+              'optional' => FALSE,
+            ),
+          ),
+        ),
+        // Shifts and returns the next item of a nodequeue.
+        'shift_queue_item' => array(
+          'help' => 'Shifts and returns the next item of a nodequeue.',
+          'file' => array(
+            'type' => 'inc',
+            'module' => 'nodequeue_service',
+            'name' => 'nodequeue_service.resource'
+          ),
+          'callback' => '_nodequeue_service_shift_queue_item',
+          'access callback' => '_nodequeue_service_access',
+          'access arguments' => array('shift_queue_item'),
+          'args' => array(
+            array(
+              'name' => 'qid',
+              'type' => 'int',
+              'description' => 'Nodequeue queue ID.',
+              'source' => array('data' => 'qid'),
+              'optional' => FALSE,
+            ),
+          ),
+        ),
+      ),
+    ),
+  );
+}
+
+/**
+ * Implements hook_permission().
+ */
+function nodequeue_service_permission() {
+  return array(
+    'get nodequeues' => array(
+      'title' => t('Get nodequeues'),
+      'description' => t('Allows to retrieve queue and subqueue information'),
+    ),
+    'get nodequeue items' => array(
+      'title' => t('Get nodequeue items'),
+      'description' => t('Allows to retrieve a list of nodequeue items'),
+    ),
+    'set nodequeue items' => array(
+      'title' => t('Add and remove nodequeue items'),
+      'description' => t('Allows to add and remove nodequeue items'),
+    ),
+  );
+}
+
+/**
+ * Access callback for the menu resource.
+ *
+ * @param $operation
+ *   The operation that's going to be performed.
+ *
+ * @return bool
+ *   Whether access is given or not.
+ */
+function _nodequeue_service_access($operation) {
+
+  switch ($operation) {
+    case 'retrieve_queues':
+      return user_access('get nodequeues');
+      break;
+    case 'retrieve_subqueues':
+      return user_access('get nodequeues');
+      break;
+    case 'retrieve_queue_items':
+      return user_access('get nodequeue items');
+      break;
+    case 'add_queue_item':
+      return user_access('set nodequeue items');
+      break;
+    case 'get_queue_item':
+      return user_access('get nodequeue items');
+      break;
+    case 'remove_queue_item':
+      return user_access('set nodequeue items');
+      break;
+    case 'shift_queue_item':
+      return user_access('set nodequeue items') && user_access('set nodequeue items');
+      break;
+  }
+}

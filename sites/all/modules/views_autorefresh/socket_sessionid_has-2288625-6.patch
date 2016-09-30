@@ -1,0 +1,17 @@
+diff --git a/nodejs.js b/nodejs.js
+index 7433ddc..bee145f 100644
+--- a/nodejs.js
++++ b/nodejs.js
+@@ -98,7 +98,7 @@ Drupal.Nodejs.connect = function () {
+       // in to other modules ajax requests without having to patch them.
+       Drupal.ajax.prototype.nodejsOriginalBeforeSerialize = Drupal.ajax.prototype.beforeSerialize;
+       Drupal.ajax.prototype.beforeSerialize = function(element_settings, options) {
+-        options.data['nodejs_client_socket_id'] = Drupal.Nodejs.socket.socket.sessionid;
++        options.data['nodejs_client_socket_id'] = Drupal.Nodejs.socket.id;
+         return this.nodejsOriginalBeforeSerialize(element_settings, options);
+       };
+     }
+diff --git a/socket_sessionid_has-2288625-6.patch b/socket_sessionid_has-2288625-6.patch
+new file mode 100644
+index 0000000..e69de29
+
