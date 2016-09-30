@@ -1,0 +1,96 @@
+server {
+        listen 80;
+
+        root /home/screens/www/public;
+        index index.php index.html index.htm;
+        server_name screeneditor;
+
+	## Sorry about the non regex and very explicit config file!
+
+     	location ~/paragraphs {
+                try_files $uri $uri/ /index.php?$args;
+        }
+        location ~/views {
+                try_files $uri $uri/ /index.php?$args;
+        }
+        location ~/batch {
+                try_files $uri $uri/ /index.php?$args;
+        }
+        location ~/endpoint {
+                try_files $uri $uri/ /index.php?$args;
+        }
+        location ~/autocomplete_deluxe {
+                try_files $uri $uri/ /index.php?$args;
+        }
+        location ~/taxonomy {
+                try_files $uri $uri/ /index.php?$args;
+        }
+
+        location /get {
+                try_files $uri $uri/ /index.php?$args;
+        }
+	location /token/tree {
+                try_files $uri $uri/ /index.php?$args;
+        }
+        location ~/file {
+                try_files $uri $uri/ /index.php?$args;
+        }
+        location /admin {
+                try_files $uri $uri/ /index.php?$args;
+        }
+        location ~/node {
+                try_files $uri $uri/ /index.php?$args;
+        }
+	
+        location /node/add {
+                try_files $uri $uri/ /index.php?$args;
+        }
+       	location ~/node/([0-9])/edit$ {
+                try_files $uri $uri/ /index.php?$args;
+       	}
+       	location ~/node/([0-9])/delete$ {
+                try_files $uri $uri/ /index.php?$args;
+       	}
+       	location /user {
+                try_files $uri $uri/ /index.php?$args;
+        }
+       	location /system {
+                try_files $uri $uri/ /index.php?$args;
+       	}
+
+
+	##IMPORTANT!!!! LIKE REALLY REALLY IMPORTANT
+        location ^~ /styles {
+                proxy_pass http://127.0.0.1:8080/styles;
+        }
+        location ^~ /scripts {
+                proxy_pass http://127.0.0.1:8080/scripts;
+       	}
+	location ^~ /images {
+        	proxy_pass http://127.0.0.1:8080/images;
+        }
+
+        location ~* \.(js|jpg|png|css)$ {
+                try_files $uri $uri/ /index.php?$args;
+                expires 30d;
+        }
+
+	location /app {
+        	proxy_pass http://127.0.0.1:8080/app;
+ 	}
+
+        error_page 404 /404.html;
+        error_page 500 502 503 504 /50x.html;
+        location = /50x.html {
+                root /usr/share/nginx/html;
+        }
+
+        location ~ \.php$ {
+		try_files $uri =404;
+                fastcgi_pass unix:/var/run/php5-fpm.sock;
+                fastcgi_index index.php;
+                fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+                include fastcgi_params;
+        }
+}
+
